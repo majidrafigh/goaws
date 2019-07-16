@@ -4,13 +4,15 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
+	"github.com/p4tin/goaws/app/common"
+
 	log "github.com/sirupsen/logrus"
 
 	"encoding/json"
 
 	"github.com/ghodss/yaml"
 	"github.com/p4tin/goaws/app"
-	"github.com/p4tin/goaws/app/common"
+	"github.com/p4tin/goaws/app/gosqs"
 )
 
 var envs map[string]app.Environment
@@ -86,8 +88,7 @@ func LoadYamlConfig(filename string, env string) []string {
 		if queue.ReceiveMessageWaitTimeSeconds == 0 {
 			queue.ReceiveMessageWaitTimeSeconds = app.CurrentEnvironment.QueueAttributeDefaults.ReceiveMessageWaitTimeSeconds
 		}
-
-		app.SyncQueues.Queues[queue.Name] = &app.Queue{
+		appQueue := &app.Queue{
 			Name:                queue.Name,
 			TimeoutSecs:         app.CurrentEnvironment.QueueAttributeDefaults.VisibilityTimeout,
 			Arn:                 queueArn,
@@ -95,6 +96,14 @@ func LoadYamlConfig(filename string, env string) []string {
 			ReceiveWaitTimeSecs: queue.ReceiveMessageWaitTimeSeconds,
 			IsFIFO:              app.HasFIFOQueueName(queue.Name),
 		}
+		if queue.RedrivePolicy != "" {
+			log.Warnf("Adding redirect policty: %s", queue.RedrivePolicy)
+			if err := gosqs.ValidateAndSetRedrivePolicy(appQueue, queue.RedrivePolicy); err != nil {
+				log.Errorf("Error creating queue: %v", err)
+				continue
+			}
+		}
+		app.SyncQueues.Queues[queue.Name] = appQueue
 	}
 
 	for _, topic := range envs[env].Topics {
