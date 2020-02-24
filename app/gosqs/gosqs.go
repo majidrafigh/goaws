@@ -1,6 +1,7 @@
 package gosqs
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
 	"net/http"
@@ -47,11 +48,11 @@ func PeriodicTasks(d time.Duration, quit <-chan struct{}) {
 	for {
 		select {
 		case <-ticker.C:
+			var b bytes.Buffer
 			app.SyncQueues.Lock()
 			for j := range app.SyncQueues.Queues {
 				queue := app.SyncQueues.Queues[j]
-
-				log.Debugf("Queue [%s] length [%d]", queue.Name, len(queue.Messages))
+				fmt.Fprintf(&b, "[%s:%d messages] ", queue.Name, len(queue.Messages))
 				for i := 0; i < len(queue.Messages); i++ {
 					msg := &queue.Messages[i]
 					if msg.ReceiptHandle != "" {
@@ -72,6 +73,7 @@ func PeriodicTasks(d time.Duration, quit <-chan struct{}) {
 					}
 				}
 			}
+			log.Debugf(b.String())
 			app.SyncQueues.Unlock()
 		case <-quit:
 			ticker.Stop()

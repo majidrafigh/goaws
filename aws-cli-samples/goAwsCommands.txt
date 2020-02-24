@@ -1,0 +1,5 @@
+
+aws --endpoint-url http://localhost:5400 sqs list-queues
+aws --endpoint-url http://localhost:5400 sqs send-message --queue-url http://sqs.local.localhost:5400/1001/Sample-Users-Notifications --message-body "this is a test of the GoAws Queue messaging"
+aws --endpoint-url http://localhost:5400 sqs receive-message --queue-url http://sqs.local.localhost:5400/1001/Sample-Users-Notifications
+aws --endpoint-url http://localhost:5400 sqs get-queue-attributes --queue-url http://sqs.local.localhost:5400/1001/Sample-Users-Notifications

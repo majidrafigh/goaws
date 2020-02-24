@@ -51,7 +51,7 @@ func LoadYamlConfig(filename string, env string) []string {
 		app.CurrentEnvironment.Port = envs[env].SqsPort
 	}
 
-	common.LogMessages = false
+	common.LogMessages = true
 	common.LogFile = "./goaws_messages.log"
 
 	if envs[env].LogMessages == true {

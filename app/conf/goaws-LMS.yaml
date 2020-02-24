@@ -10,13 +10,21 @@ Local: # Environment name that can be passed on the command line
     VisibilityTimeout: 5 # message visibility timeout
     ReceiveMessageWaitTimeSeconds: 20 # receive message max wait time
   Queues: # List of queues to create at startup, if you would like to use a queue as a dead letter queue, it should appear before the main queue in the list
-    - Name: Sample-Users-Notifications-DLQ # Queue name for the dead letter queue
-    - Name: Sample-Users-Notifications # Queue name
+    - Name: SNS-DomainEventsQueue-LMS-DLQ # Queue name for the dead letter queue
+    - Name: SNS-DomainEventsQueue-LMS # Queue name
       ReceiveMessageWaitTimeSeconds: 20 # Queue receive message max wait time
-      RedrivePolicy: '{"deadLetterTargetArn":"arn:aws:sqs:us-east-1:1001:Sample-Users-Notifications-DLQ","maxReceiveCount":3}'
+      RedrivePolicy: '{"deadLetterTargetArn":"arn:aws:sqs:us-east-1:1001:SNS-DomainEventsQueue-LMS-DLQ","maxReceiveCount":3}'
+    - Name: ExternalTraining-DLQ # Queue name
+    - Name: ExternalTraining # Queue name
+      ReceiveMessageWaitTimeSeconds: 20 # Queue receive message max wait time
+      RedrivePolicy: '{"deadLetterTargetArn":"arn:aws:sqs:us-east-1:1001:ExternalTraining-DLQ","maxReceiveCount":3}'
 
   Topics: # List of topic to create at startup
-    - Name: Sample-Users-Topic # Topic name - with some Subscriptions
+    - Name: DomainEvents # Topic name - with some Subscriptions
       Subscriptions: # List of Subscriptions to create for this topic (queues will be created as required)
-        - QueueName: Sample-Users-Notifications # Queue name
+        - QueueName: SNS-DomainEventsQueue-LMS # Queue name
           Raw: true # Raw message delivery (true/false)
+          FilterPolicy: '{"source": ["lms"]}' # Subscription's FilterPolicy, json object as a string
+        - QueueName: ExternalTraining # Queue name
+          Raw: true # Raw message delivery (true/false)
+          FilterPolicy: '{"source": ["external_training"]}' # Subscription's FilterPolicy, json object as a string

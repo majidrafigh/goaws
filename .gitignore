@@ -2,6 +2,8 @@
 
 vendor/
 deployments/
+.vscode/
+output/
 
 goaws
 goaws_linux_amd64

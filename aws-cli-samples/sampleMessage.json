@@ -1,0 +1,8 @@
+{
+  "$type": "AbsorbLMS.Business.Users.Domain.Events.UserCreatedExternalEvent, AbsorbLMS.Business",
+  "UserId": "eabc4faa-b1fc-4d41-910a-76248f3b3513",
+  "SendNewUserEmail": true,
+  "CorrelationId": "2a33be14-f2d2-44ee-8093-dea77b722b7f",
+  "ClientId": "00000000-aaaa-bbbb-5555-00001212bbbb",
+  "EventDate": "2019-08-01T21:58:33.7532118Z"
+}
