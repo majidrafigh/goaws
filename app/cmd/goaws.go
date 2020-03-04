@@ -1,9 +1,7 @@
-
 package main
 
 import (
 	"flag"
-	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -11,7 +9,6 @@ import (
 
 	"github.com/Freman/eventloghook"
 	"github.com/kardianos/service"
-	"github.com/p4tin/goaws/app/common"
 	"github.com/p4tin/goaws/app/conf"
 	"github.com/p4tin/goaws/app/gosqs"
 	"github.com/p4tin/goaws/app/router"
@@ -58,16 +55,6 @@ func (p *program) run() {
 	}
 
 	portNumbers := conf.LoadYamlConfig(filename, env)
-
-	if common.LogMessages {
-		file, err := os.OpenFile(common.LogFile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-		if err == nil {
-			mw := io.MultiWriter(os.Stdout, file)
-			log.SetOutput(mw)
-		} else {
-			log.Warn("Failed to log to file, using default stderr")
-		}
-	}
 
 	r := router.New()
 
